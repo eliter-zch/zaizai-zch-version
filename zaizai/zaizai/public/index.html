@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#111916">
+    <meta name="description" content="仔仔，一场蓄力、预判与反击的多人回合竞技。无需注册，叫上朋友，即刻开局。">
+    <title>仔仔 · ZAIZAI ARENA</title>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='18' fill='%23c4f582'/%3E%3Ctext x='32' y='46' text-anchor='middle' font-size='48' fill='%23111916'%3E✦%3C/text%3E%3C/svg%3E">
+    <link rel="stylesheet" href="/styles.css">
+    <link rel="stylesheet" href="/arena-layout.css">
+    <script src="/app.js" defer></script>
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="brand" href="/" aria-label="仔仔首页"><span class="brand-mark">✦</span><span>仔仔<small>ZAIZAI ARENA</small></span><span class="beta">BETA</span></a>
+      <nav><span id="connection" class="connection"><i></i><span>实时联机</span></span><button id="user-button" class="user-button hidden"></button></nav>
+    </header>
+    <main id="app" aria-live="polite"></main>
+    <footer class="site-footer"><span>✦ 仔仔 · 和朋友，见招拆招。</span><span>2–8 人联机 <b>·</b> 同时出招 <b>·</b> 只凭预判</span></footer>
+    <div id="toast" role="status" class="toast"></div>
+    <dialog id="modal"><div id="modal-content"></div></dialog>
+    <noscript>请启用 JavaScript 以进入仔仔联机游戏。</noscript>
+  </body>
+</html>

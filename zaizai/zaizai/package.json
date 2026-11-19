@@ -1,0 +1,20 @@
+{
+  "name": "zaizai-arena",
+  "version": "1.0.0",
+  "private": true,
+  "description": "仔仔 · 无需账号的实时联机回合竞技场",
+  "type": "module",
+  "scripts": {
+    "start": "node server/index.js",
+    "dev": "node --watch server/index.js",
+    "test": "node --test test/game.test.js test/server.test.js test/results.test.js",
+    "test:browser": "node test/browser.mjs",
+    "test:selection": "node test/selection-sync.mjs"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "devDependencies": {
+    "playwright": "^1.65.1"
+  }
+}

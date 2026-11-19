@@ -1,0 +1,152 @@
+.in-room .site-header{height:56px;max-width:none;padding-inline:clamp(12px,2.5vw,36px)}
+.in-room .site-footer{display:none}
+.in-room #app{max-width:none;height:calc(100dvh - 56px);min-height:0;margin:0;padding:0 16px}
+.game-room,.game-room .game-layout,.game-room .battle-panel{height:100%;min-height:0}
+.game-room .game-layout{display:block}
+.game-room .battle-panel{display:flex;flex-direction:column}
+.game-room .battle-sidebar{display:none}
+.game-room .arena{flex:1 1 auto;height:auto;min-height:0}
+.game-room .battle-caption{flex:0 0 auto}
+.game-room .battle-toolbar{flex:0 0 auto;min-height:54px;padding:7px 16px;gap:12px}
+.battle-toolbar-main,.battle-room-tools,.battle-caption-actions{display:flex;align-items:center}
+.battle-toolbar-main{flex:1 1 auto;min-width:0;gap:14px}
+.arena-panel-button,.history-button{display:inline-flex;align-items:center;justify-content:center;gap:7px;min-height:36px;padding:7px 11px;border:1px solid #405237;border-radius:7px;background:#202a1f;color:#c8dcb9;font-size:11px;white-space:nowrap}
+.battle-round{display:flex;align-items:center;gap:7px;color:#c4d6b7;font-size:12px;white-space:nowrap}
+.battle-round b{color:#617653;font-weight:400}.battle-round small{color:#879e77;font-size:10px}
+.battle-instruction{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:10px}
+.battle-room-tools{flex:0 0 auto;gap:7px}
+.battle-room-name{overflow:hidden;max-width:180px;color:#e0ebd8;font-size:12px;text-overflow:ellipsis;white-space:nowrap}
+.battle-room-tools select{width:68px;height:34px;padding:4px 6px;border:1px solid #405237;border-radius:6px;background:#172018;color:#d0e0c5;font-size:10px}
+.battle-room-tools .icon-button{width:34px;height:34px;border-radius:7px}
+.arena-panel-button:hover,.history-button:hover{border-color:#829968;background:#2a3826;color:#e1f2d3}
+.game-room .seat{min-width:108px;max-width:154px}
+.game-room .avatar-shell{width:74px;height:74px;padding:8px}
+.game-room .empty-seat .avatar-shell{width:56px;height:56px}
+.game-room .seat-name{max-width:148px;margin-top:7px;font-size:13px}
+.game-room .seat-detail{margin-top:4px;font-size:10px}
+.game-room .action-bubble{font-size:11px;padding:4px 9px}
+.game-room .readiness-bubble{font-size:10px}
+.arena-controls{width:40%;max-width:560px}
+.arena-controls .arsenal{padding:14px 16px}
+.arena-controls .arsenal-heading h2{font-size:16px}
+.arena-controls .move-card{min-height:47px;padding:7px 8px}
+.arena-controls .move-card .move-glyph{font-size:22px}
+.arena-controls .move-card>strong{font-size:12px}
+.arena-controls .move-cost{font-size:8px}
+.arena-controls .selected-description{min-height:29px;margin-top:8px;font-size:10px}
+.arena-hud{top:12px;right:14px;max-width:240px;min-width:145px;padding:10px 12px}
+.arena-hud h2{font-size:14px}
+.arena-hud p,.arena-hud .center-badge{font-size:9px}
+.arena-hud .center-timer{font-size:36px}
+.center-welcome h2,.center-reveal h2,.locked-selection h2{font-size:21px}
+.center-welcome p,.center-reveal p,.locked-selection p{font-size:12px}
+.game-room .battle-caption{min-height:42px;padding:5px 16px;font-size:10px}
+.battle-caption-actions{gap:10px}
+.history-button{min-height:33px}
+.game-room .arena>.arena-panel-button,.game-room .arena>.history-button{position:absolute;z-index:5;box-shadow:0 4px 14px #0002}
+.game-room .arena>.arena-panel-button{top:12px;left:14px}
+.game-room .arena>.history-button{right:14px;bottom:14px}
+dialog.wide:has(.battle-log){width:680px}
+dialog .battle-log .log-content{max-height:min(52dvh,480px)}
+
+@media(max-width:900px){
+  .game-room .battle-toolbar{flex-wrap:wrap;gap:5px 10px}
+  .battle-toolbar-main{flex:1 1 100%;justify-content:space-between}
+  .battle-instruction{max-width:32%}
+  .game-room .arena-controls{width:54%;max-width:500px}
+}
+
+@media(max-width:600px){
+  .in-room .site-header{height:52px;padding-inline:10px}
+  .in-room #app{height:calc(100dvh - 52px);padding-inline:4px}
+  .game-room .battle-toolbar{min-height:78px;padding:5px 7px}
+  .battle-toolbar-main{gap:6px}
+  .battle-round{gap:4px;font-size:10px}
+  .battle-round small,.battle-instruction,.battle-room-name{display:none}
+  .battle-room-tools{gap:5px}
+  .battle-room-tools select{width:58px;height:30px;font-size:9px}
+  .battle-room-tools .icon-button{width:30px;height:30px}
+  .game-room .arena{background-size:20px 20px}
+  .game-room .seat{min-width:69px;max-width:94px;padding-inline:2px}
+  .game-room .avatar-shell{width:50px;height:50px;padding:5px}
+  .game-room .empty-seat .avatar-shell{width:40px;height:40px}
+  .game-room .seat-name{max-width:90px;margin-top:4px;font-size:9px}
+  .game-room .seat-detail{margin-top:2px;font-size:7px}
+  .game-room .action-bubble{font-size:8px;padding:2px 5px}
+  .game-room .readiness-bubble{font-size:7px}
+  .game-room .arena-controls{width:57%;max-width:340px}
+  .arena-controls .arsenal{padding:8px}
+  .arena-controls .arsenal-heading h2{font-size:13px}
+  .arena-controls .move-card{min-height:38px;padding:4px 3px}
+  .arena-controls .move-card>strong{font-size:9px}
+  .arena-controls .move-cost{font-size:6px}
+  .arena-controls .selected-description{min-height:24px;margin-top:5px;font-size:8px}
+  .arena-controls .action-detail,.arena-controls .action-detail>span{font-size:8px}
+  .arena-hud{top:6px;right:6px;min-width:92px;max-width:135px;padding:6px 7px}
+  .arena-hud h2{font-size:10px}
+  .arena-hud p,.arena-hud .center-badge{font-size:7px}
+  .arena-hud .center-timer{font-size:25px}
+  .game-room .battle-caption{min-height:39px;gap:6px;padding:4px 7px;font-size:7px}
+  .game-room .battle-caption>span:first-child{display:none}
+  .battle-caption-actions{gap:7px}
+  .battle-caption-actions .text-button{font-size:8px}
+  .history-button{min-height:30px;padding:5px 7px;font-size:9px}
+  .game-room .arena>.arena-panel-button{top:6px;left:6px;min-height:30px;padding:5px 7px;font-size:9px}
+  .game-room .arena>.history-button{right:6px;bottom:6px}
+}
+
+/* Keep round progress directly underneath the local player's seat. */
+.game-room .battle-caption{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr)}
+.game-room .battle-caption>.match-progress{grid-column:2;justify-self:center;white-space:nowrap}
+.game-room .battle-caption-actions{grid-column:3;justify-self:end}
+
+/* Spend the space saved by removing selection hints on legible move buttons. */
+.game-room .arena-controls .arsenal .moves-grid>.move-card{min-height:54px;padding:7px 8px}
+.game-room .arena-controls .arsenal .moves-grid>.move-card>strong{font-size:15px}
+.game-room .arena-controls .arsenal .moves-grid>.move-card .move-glyph{font-size:24px}
+.game-room .arena-controls .arsenal .move-cost{font-size:10px}
+.game-room .arena-controls .many-moves .moves-grid>.move-card{min-height:44px;padding:6px}
+.game-room .arena-controls .many-moves .moves-grid>.move-card>strong{font-size:13px}
+.game-room .arena-controls .many-moves .moves-grid>.move-card .move-glyph{font-size:18px}
+.game-room .arena-controls .arsenal .action-bar{display:flex;gap:8px;align-items:center;margin-top:10px;padding-top:10px}
+.game-room .arena-controls .arsenal .lock-button{flex:1;min-height:37px;width:auto;font-size:12px}
+.game-room .arena-controls .arsenal #reflect-select{flex:1;min-width:0;width:50%;height:37px;font-size:11px;order:0}
+
+@media(max-width:600px){
+  .game-room .arena-controls .arsenal .moves-grid>.move-card{min-height:46px;padding:5px 3px}
+  .game-room .arena-controls .arsenal .moves-grid>.move-card>strong{font-size:12px}
+  .game-room .arena-controls .arsenal .moves-grid>.move-card .move-glyph{font-size:17px}
+  .game-room .arena-controls .arsenal .move-cost{font-size:8px}
+  .game-room .arena-controls .many-moves .moves-grid>.move-card{min-height:42px}
+  .game-room .arena-controls .many-moves .moves-grid>.move-card>strong{font-size:11px}
+  .game-room .arena-controls .moves-grid:has(>.move-card:nth-child(13)){grid-template-columns:repeat(5,minmax(0,1fr))}
+  .game-room .arena-controls .moves-grid:has(>.move-card:nth-child(13))>.move-card{min-height:40px;padding-inline:2px}
+  .game-room .arena-controls .moves-grid:has(>.move-card:nth-child(13))>.move-card>strong{font-size:10px}
+  .game-room .arena-controls .arsenal .action-bar{gap:5px;margin-top:7px;padding-top:7px}
+  .game-room .arena-controls .arsenal .lock-button{min-height:34px;font-size:11px;padding:6px}
+  .game-room .arena-controls .arsenal #reflect-select{height:34px;font-size:9px;padding:4px}
+}
+
+/* Public resources and avalanche restrictions stay with each avatar. */
+/* Status strip: bigger vitals, click to expand/collapse the detail rows. */
+.game-room .seat-detail{display:flex;flex-direction:column;align-items:center;gap:3px;line-height:1.35;pointer-events:auto;cursor:pointer;padding:2px 4px}
+.game-room .seat:not(.targetable){cursor:default}
+.game-room .seat:not(.targetable):active{transform:translate(-50%,-50%)}
+.seat-vitals,.seat-resources{display:block;white-space:nowrap}
+.game-room .seat-vitals{font-size:13px;font-weight:650;color:#e8f2dc;letter-spacing:.3px}
+.game-room .seat-vitals .heart{font-size:14px}
+.game-room .seat-toggle{display:inline-flex;align-items:center;justify-content:center;min-width:46px;min-height:20px;line-height:1;font-size:13px;color:#b9d0a5;padding:2px 12px;border:1px solid #45573b;border-radius:7px;background:#22301e;transition:color .15s,border-color .15s,background .15s}
+.game-room .seat-detail:hover .seat-toggle{color:var(--accent);border-color:#697a59;background:#2a3a24}
+.game-room .seat-extra{display:flex;flex-direction:column;align-items:center;gap:1px}
+.game-room .seat-resources{color:#adc49b;font-size:11.5px;letter-spacing:0}
+.game-room .seat-ban{display:block;max-width:170px;white-space:normal;overflow-wrap:anywhere;color:#b8dff4;font-size:11px}
+.game-room .action-bubble{display:block;max-width:180px;white-space:normal;overflow-wrap:anywhere;text-align:center}
+@media(max-width:600px){
+  .game-room .seat-detail{gap:1px}
+  .game-room .seat-vitals{font-size:10px}
+  .game-room .seat-vitals .heart{font-size:11px}
+  .game-room .seat-toggle{min-width:34px;min-height:16px;font-size:11px;padding:1px 8px}
+  .game-room .seat-resources,.game-room .seat-ban{font-size:9px}
+  .game-room .seat-ban{max-width:100px}
+  .game-room .action-bubble{max-width:110px;font-size:8px;line-height:1.4}
+}
