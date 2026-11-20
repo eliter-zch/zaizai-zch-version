@@ -13,6 +13,7 @@ let resourceNames = {energy:'仔',hammers:'锤',shields:'圣盾',guards:'防'};
 let token = sessionStorage.getItem('zaizai-token');
 let self = null;
 let state = {rooms:[],room:null};
+let tutorial = null;
 let events;
 let timeOffset = 0;
 let lastRound = '';
@@ -55,7 +56,7 @@ async function api(route, body) {
   const res = await fetch(`/api${route}`, {method:body===undefined?'GET':'POST', headers:{'Content-Type':'application/json',...(token?{Authorization:`Bearer ${token}`}:{})},...(body===undefined?{}:{body:JSON.stringify(body)})});
   const data=await res.json();
   if (!res.ok) {
-    if(res.status===401) { token=null; sessionStorage.removeItem('zaizai-token'); events?.close(); self=null; render(); }
+    if(res.status===401) { token=null; sessionStorage.removeItem('zaizai-token'); events?.close(); self=null; tutorial=null; render(); }
     throw new Error(data.error || '连接失败，请重试。');
   }
   return data;
@@ -215,7 +216,8 @@ function render() {
   }
   if(patchSelection())return;
   document.body.classList.toggle('in-room',!!self&&!!state.room);
-  app.innerHTML=!self?landing():state.room?arenaPage(state.room):lobby();
+  app.innerHTML=!self?landing():tutorial?tutorialPage():state.room?arenaPage(state.room):lobby();
+  attachTutorialCatalog();
   const key=selectionKey();
   renderedSelection=key?{key,ownAction:JSON.stringify(state.room.ownAction)}:null;
   for(const [id,value] of preserved){const el=document.getElementById(id);if(el)el.value=value;}
@@ -229,13 +231,51 @@ function render() {
   tick();
 }
 
+function attachTutorialCatalog(){
+  const sidebar=app.querySelector('.lobby-sidebar');
+  if(sidebar){
+    const section=document.createElement('section');section.className='panel tutorial-catalog';
+    section.innerHTML=`<span class="eyebrow">BEGINNER COURSE</span><h2>新手教程</h2><button class="tutorial-level" data-act="tutorial-start"><span class="tutorial-level-number">01</span><span class="tutorial-level-copy"><strong>关卡1：基础</strong><small>学习仔、锤与枪的基础策略</small></span>${icon('chevron',16)}</button>`;
+    sidebar.prepend(section);
+  }
+  if(tutorial?.round===2&&!tutorial.result){
+    const robot=app.querySelector('.tutorial-player.robot');
+    if(robot){
+      robot.querySelector('small').textContent='仔 1 · 防 0';
+      const action=document.createElement('span');action.className='tutorial-action charge';action.textContent='上回合 · 仔';robot.append(action);
+    }
+    const playerAction=app.querySelector('.tutorial-player:not(.robot) .tutorial-action');
+    if(playerAction)playerAction.textContent='上回合 · 仔';
+  }
+  const controls=app.querySelector('.tutorial-controls');
+  if(tutorial?.result&&controls){
+    const actions=document.createElement('div');actions.className='tutorial-result-actions';
+    actions.innerHTML='<button class="secondary-button" data-act="tutorial-replay">再来一次</button><button class="primary-button" data-act="tutorial-exit">退出新手教程</button>';
+    controls.append(actions);
+  }
+}
+
 function landing(){
-  return `<section class="welcome"><div class="welcome-copy"><div class="pill"><i class="live-dot"></i> 随时开一局，朋友即对手</div><h1>蓄一手。<br>等一个<span class="accent">好时机<span class="title-star">✳</span></span>。</h1><p class="welcome-description">看似简单的出招，意想不到的反击。<br>叫上朋友，在这一回合，猜透彼此。</p><form id="login-form" class="login-card"><label for="nickname">先给自己起个名字<span>无需注册，即刻开玩</span></label><div class="login-input-row"><span class="input-icon">${icon('users')}</span><input id="nickname" name="nickname" data-preserve placeholder="你的临时昵称" maxlength="12" required autocomplete="nickname" aria-label="临时昵称"><button class="primary-button" type="submit">进入大厅 ${icon('arrow',18)}</button></div><small>这个名字只会显示在对局中，刷新页面可继续连接。</small></form><div class="welcome-facts"><span>${icon('users',17)} 2–8 人同场</span><span>${icon('clock',17)} 同时出招</span><span>♧ 好友联机</span></div></div><div class="welcome-art"><div class="art-grid"></div><div class="art-orbit orbit-one"></div><div class="art-orbit orbit-two"></div><span class="art-coordinate">ARENA_001 / READY TO PLAY</span><span class="floating-tag tag-top">✦ 蓄力中…</span><div class="hero-mascot mascot-one">${avatar(0)}<span class="hero-name">仔仔 <i>READY</i></span></div><div class="hero-mascot mascot-two">${avatar(1)}<span class="hero-name">小蓝 <i>READY</i></span></div><div class="hero-mascot mascot-three">${avatar(2)}<span class="hero-name">橘子 <i>READY</i></span></div><div class="hero-burst">✹</div><span class="floating-tag tag-bottom">下一招，你猜？ ${icon('arrow',16)}</span><div class="art-caption"><span class="live-dot"></span> EVERY ROUND IS A MIND GAME.</div></div></section><section class="onboarding-strip"><div class="strip-heading"><span class="eyebrow">EASY TO PLAY. HARD TO PREDICT.</span><h2>三步，就入局。</h2></div><div><span class="step-number">01</span><h3>叫上你的搭子</h3><p>创建房间，分享链接，集合。</p></div><div><span class="step-number">02</span><h3>悄悄锁定招式</h3><p>蓄力、防御或攻击，同时亮招。</p></div><div><span class="step-number">03</span><h3>活到最后一刻</h3><p>见招拆招，成为最后的幸存者。</p></div></section>`;
+  return `<section class="welcome"><div class="welcome-copy"><div class="pill"><i class="live-dot"></i> 随时开一局，朋友即对手</div><h1>蓄一手。<br>等一个<span class="accent">好时机<span class="title-star">✳</span></span>。</h1><p class="welcome-description">看似简单的出招，意想不到的反击。<br>叫上朋友，在这一回合，猜透彼此。</p><form id="login-form" class="login-card"><label for="nickname">先给自己起个名字<span>无需注册，即刻开玩</span></label><div class="login-input-row"><span class="input-icon">${icon('users')}</span><input id="nickname" name="nickname" data-preserve placeholder="你的临时昵称" maxlength="12" required autocomplete="nickname" aria-label="临时昵称"></div><div class="login-actions"><button class="primary-button" type="submit">进入大厅 ${icon('arrow',18)}</button><button class="secondary-button" type="button" data-act="rules"><span class="nav-icon">▤</span> 玩法手册</button></div><small>这个名字只会显示在对局中，刷新页面可继续连接。</small></form><div class="welcome-facts"><span>${icon('users',17)} 2–8 人同场</span><span>${icon('clock',17)} 同时出招</span><span>♧ 好友联机</span></div></div><div class="welcome-art"><div class="art-grid"></div><div class="art-orbit orbit-one"></div><div class="art-orbit orbit-two"></div><span class="art-coordinate">ARENA_001 / READY TO PLAY</span><span class="floating-tag tag-top">✦ 蓄力中…</span><div class="hero-mascot mascot-one">${avatar(0)}<span class="hero-name">仔仔 <i>READY</i></span></div><div class="hero-mascot mascot-two">${avatar(1)}<span class="hero-name">小蓝 <i>READY</i></span></div><div class="hero-mascot mascot-three">${avatar(2)}<span class="hero-name">橘子 <i>READY</i></span></div><div class="hero-burst">✹</div><span class="floating-tag tag-bottom">下一招，你猜？ ${icon('arrow',16)}</span><div class="art-caption"><span class="live-dot"></span> EVERY ROUND IS A MIND GAME.</div></div></section><section class="onboarding-strip"><div class="strip-heading"><span class="eyebrow">EASY TO PLAY. HARD TO PREDICT.</span><h2>三步，就入局。</h2></div><div><span class="step-number">01</span><h3>叫上你的搭子</h3><p>创建房间，分享链接，集合。</p></div><div><span class="step-number">02</span><h3>悄悄锁定招式</h3><p>蓄力、防御或攻击，同时亮招。</p></div><div><span class="step-number">03</span><h3>活到最后一刻</h3><p>见招拆招，成为最后的幸存者。</p></div></section>`;
 }
 function lobby(){
   const rooms=state.rooms.filter(r=>(ui.filter==='all'||['waiting','finished'].includes(r.phase))&&`${r.name} ${r.id} ${r.hostName}`.toLowerCase().includes(ui.search.toLowerCase()));
   const waiting=state.rooms.filter(r=>['waiting','finished'].includes(r.phase)&&r.count<r.capacity).length;
   return `<div class="page-heading"><div><span class="eyebrow">THE LOBBY</span><h1>游戏大厅<span class="heading-star">✳</span></h1><p>你好，${esc(self.name)}。找个房间，让这回合有点意思。</p></div><button class="primary-button" data-act="create">${icon('plus')} 创建房间</button></div><div class="lobby-layout"><section class="room-list-section"><div class="section-toolbar"><div class="tabs"><button data-act="filter" data-value="all" class="${ui.filter==='all'?'active':''}">全部房间 <span>${state.rooms.length}</span></button><button data-act="filter" data-value="waiting" class="${ui.filter==='waiting'?'active':''}">等待加入 <span>${waiting}</span></button></div><label class="search-box">${icon('search',17)}<input id="search" data-preserve placeholder="搜索房间 / 房间号" value="${esc(ui.search)}" aria-label="搜索房间"></label></div><div class="rooms-grid">${rooms.length?rooms.map(roomCard).join(''):`<div class="empty-state"><span class="empty-illustration">${avatar(0)}</span><h2>${ui.search?'没有找到这个房间':'第一间房，等你来开'}</h2><p>${ui.search?'试试其他名字，或使用房间号加入。':'这里还很安静。创建一个房间，叫朋友来热闹一下。'}</p><button class="secondary-button" data-act="create">${icon('plus',17)} 创建你的房间</button></div>`}</div><div class="lobby-note"><span class="live-dot"></span> 房间状态实时更新 · 所有玩家准备后自动开局</div></section><aside class="lobby-sidebar"><section class="panel quick-join"><span class="eyebrow">GOT AN INVITE?</span><h2>朋友在等你？</h2><p>输入 6 位房间号，直接集合。</p><form id="join-form"><input id="join-code" data-preserve placeholder="例如 A1B2C3" maxlength="6" required autocomplete="off" aria-label="房间号"><button class="secondary-button" type="submit">加入房间 ${icon('arrow',17)}</button></form></section><section class="panel how-to"><span class="eyebrow">A LITTLE HEAD START</span><h2>第一回合，怎么出？</h2><div class="tip-move"><b class="move-mini mint">✦</b><div><strong>仔 · 先蓄力</strong><p>获得 1 个仔，解锁更多招式。</p></div></div><div class="tip-move"><b class="move-mini blue">◇</b><div><strong>防 · 稳一手</strong><p>预判攻击，挡住枪和火球。</p></div></div><div class="tip-move"><b class="move-mini amber">⚒</b><div><strong>锤 · 破防专家</strong><p>敲击防御，还能积攒流星锤。</p></div></div><button class="text-button accent" data-act="rules">查看全部 14 种招式 ${icon('arrow',16)}</button></section><div class="sidebar-quote">“再来一局，这次我肯定猜到。”<span>—— 每一个仔仔玩家</span></div></aside></div>`;
+}
+function tutorialPage(){
+  const secondRound=tutorial.round===2;
+  const result=tutorial.result;
+  const robotMove=result?.robotMove;
+  const playerMove=tutorial.playerMove;
+  const moveLabel={charge:'✦ 仔',hammer:'⚒ 锤',gun:'↗ 枪'};
+  return `<section class="tutorial-page"><div class="tutorial-heading"><div><span class="eyebrow">BEGINNER COURSE · LEVEL 01</span><h1>关卡1：基础</h1></div><button class="text-button" data-act="tutorial-exit">${icon('exit',16)} 退出教程</button></div><div class="tutorial-board"><div class="tutorial-prompt"><span class="eyebrow">${secondRound?'预判与应对':'积累资源'}</span><p>${secondRound?'根据你的打法风格，选择不同的应对策略。此时，若要进攻，可出锤预判机器人出防，或出枪预判机器人出仔':'双方均出仔，积累资源'}</p></div><div class="tutorial-arena"><div class="tutorial-player"><span class="tutorial-seat-label">你</span><span class="avatar-shell">${avatar(0)}</span><strong>${esc(self.name)}</strong><small>仔 ${tutorial.energy||0} · 生命 1</small>${playerMove?`<span class="tutorial-action ${playerMove}">${moveLabel[playerMove]}</span>`:''}</div><div class="tutorial-arena-center"><span class="tutorial-vs">VS</span><span class="tutorial-round-label">第 ${tutorial.round} 回合</span></div><div class="tutorial-player robot"><span class="tutorial-seat-label">机器人</span><span class="avatar-shell">${avatar(1)}</span><strong>仔仔机器人</strong><small>${robotMove?`仔 ${robotMove==='charge'?1:0} · 防 ${robotMove==='guard'?1:0}`:'等待出招'}</small>${robotMove?`<span class="tutorial-action ${robotMove}">${robotMove==='charge'?'✦ 仔':'◇ 防'}</span>`:''}</div></div><div class="tutorial-controls">${result?`<p class="tutorial-result-copy">${result.success?'判断正确，成功击败机器人！':'这次没能击败机器人，观察它的出招再试一次。'}</p>`:secondRound?`<button class="move-card hammer" data-act="tutorial-move" data-id="hammer"><span class="move-glyph">⚒</span><strong>锤</strong><span class="move-cost">预判机器人出防</span></button><button class="move-card gun" data-act="tutorial-move" data-id="gun"><span class="move-glyph">↗</span><strong>枪</strong><span class="move-cost">预判机器人出仔</span></button>`:`<button class="move-card mint tutorial-charge" data-act="tutorial-move" data-id="charge"><span class="move-glyph">✦</span><strong>出仔，继续</strong><span class="move-cost">双方获得 1 个仔</span></button>`}</div></div></section>`;
+}
+function showTutorialResult(){
+  const {success,robotMove}=tutorial.result;
+  const robotAction=robotMove==='charge'?'机器人出了仔':'机器人出了防';
+  const explanation=success?(robotMove==='charge'?'你的枪命中机器人，成功击败对手。':'你的锤克制了机器人的防，成功击败对手。'):'你的招式没有命中，再试一次，观察仔与防的克制关系。';
+  openModal(`${modalHeader('TRAINING MATCH',success?'博弈成功':'博弈失败')}<p class="modal-description">${robotAction}。${explanation}</p><div class="modal-actions"><button class="secondary-button" data-act="tutorial-replay">再来一次</button><button class="primary-button" data-act="tutorial-exit">退出新手教程</button></div>`);
 }
 function roomCard(room,index){
   const playing=['selecting','interrupt','reveal'].includes(room.phase), full=room.count>=room.capacity;
@@ -354,6 +394,16 @@ document.addEventListener('click',async event=>{
   const el=event.target.closest('[data-act]');if(!el||el.disabled)return;
   const act=el.dataset.act,id=el.dataset.id;
   if(act==='close-modal')return dialog.close();
+  if(act==='tutorial-start'){tutorial={round:1,energy:0,playerMove:null,result:null};render();return;}
+  if(act==='tutorial-exit'){tutorial=null;dialog.close();render();return;}
+  if(act==='tutorial-replay'){tutorial={round:1,energy:0,playerMove:null,result:null};dialog.close();render();return;}
+  if(act==='tutorial-move'){
+    if(tutorial.round===1){tutorial={round:2,energy:1,playerMove:'charge',robotMove:'charge',result:null};render();return;}
+    const robotMove=Math.random()<.5?'charge':'guard';
+    const success=(id==='gun'&&robotMove==='charge')||(id==='hammer'&&robotMove==='guard');
+    tutorial={...tutorial,playerMove:id,result:{success,robotMove}};
+    render();showTutorialResult();return;
+  }
   if(act==='rules')return showRules();
   if(act==='show-history')return openModal(`${modalHeader('ROUND HISTORY','战况记录')}${logPanel(state.room)}`,'wide');
   if(act==='show-leaderboard')return openModal(`${modalHeader('ROOM RANKING','排行榜')}${leaderboardPanel(state.room)}`);
@@ -381,7 +431,7 @@ document.addEventListener('click',async event=>{
   if(act==='signout'){
     if(state.room)await command('/rooms/leave');
     if(state.room)return;
-    events?.close();token=null;self=null;sessionStorage.removeItem('zaizai-token');state={rooms:[],room:null};dialog.close();render();
+    events?.close();token=null;self=null;tutorial=null;sessionStorage.removeItem('zaizai-token');state={rooms:[],room:null};dialog.close();render();
   }
 });
 document.addEventListener('submit',async event=>{
@@ -411,7 +461,6 @@ document.addEventListener('focusout',()=>{
     if(deferredRender&&!document.activeElement?.matches('select')){deferredRender=false;render();}
   },0);
 });
-$('#rules-open').addEventListener('click',showRules);
 $('#user-button').addEventListener('click',()=>openModal(`${modalHeader('TEMPORARY IDENTITY','这一局，你是 '+esc(self.name))}<p class="modal-description">无需账号。昵称只用于对局展示，刷新页面可以重连。每个浏览器标签页使用独立的临时身份。</p><button class="secondary-button full-width" data-act="signout">${state.room?'退出房间并更换昵称':'更换临时昵称'} ${icon('arrow',17)}</button>`));
 dialog.addEventListener('click',event=>{if(event.target===dialog){const r=dialog.getBoundingClientRect();if(event.clientX<r.left||event.clientX>r.right||event.clientY<r.top||event.clientY>r.bottom)dialog.close();}});
 function tick(){
